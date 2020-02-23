@@ -1,0 +1,33 @@
+h2 {
+    margin-bottom: 1rem;
+}
+
+#list:not(.hasData) {
+    display: none;
+}
+
+#toast-wrapper {
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: 0;
+    transition: opacity 0.5s;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+#toast-wrapper.show {
+    display: flex;
+    opacity: 1;
+}
+
+.media-image {
+    width: 20%;
+    position: relative;
+}
+
+.media-image-frame {
+    position: absolute;
+    border: 2px solid #2196f3;
+}

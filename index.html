@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    <title>Face Comparator</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-4">Face Comparator</h1>
+            <p class="lead">얼굴을 분석하고 비교합니다.</p>
+            <hr class="my-4">
+            <p>분석 및 비교에 사용한 이미지와 데이터는 생성기준으로 24시간 보관되며, 이후 완전히 삭제됩니다.</p>
+            <p>Face Comparator는 Microsoft의 Face API를 사용합니다.</p>
+            <p>&nbsp;</p>
+        </div>
+        <div class="container">
+            <label for="basic-url">End Point</label>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">https://</span>
+                </div>
+                <input type="text" class="form-control" id="end-point">
+                <div class="input-group-append">
+                    <span class="input-group-text">/face</span>
+                </div>
+            </div>
+            <label for="basic-url">Key</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="key">
+            </div>
+            <p class="text-right"><a href="https://azure.microsoft.com/ko-kr/try/cognitive-services/my-apis/?api=face-api" class="btn btn-primary" target="_blank">키 발급 받기</a></p>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <h2>얼굴 비교하기</h2>
+        <div class="row">
+            <div class="input-group mb-3 col-sm-6">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">얼굴 1</span>
+                </div>
+                <input type="text" class="form-control" name="faceId1" id="faceId1" placeholder="faceId를 입력해주세요." value="">
+            </div>
+            <div class="input-group mb-3 col-sm-6">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">얼굴 2</span>
+                </div>
+                <input type="text" class="form-control" name="faceId2" id="faceId2" placeholder="faceId를 입력해주세요." value="">
+            </div>
+            <div class="mb-3 col-sm-12 text-right"><button class="btn btn-primary" onclick="diffFace()">비교하기</button></div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <h2>얼굴 추가하기</h2>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="이미지의 URL을 입력해주세요." name="inputImage" id="inputImage" value="https://i.pinimg.com/originals/c8/14/99/c814995b86a60232c93492f5c90c0570.jpg">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" onclick="addFace()">얼굴 추가하기</button>
+            </div>
+        </div>
+        <div class="alert alert-warning">
+            <strong>📌 제한사항</strong><br>
+            <small>제한사항에 맞지 않는 이미지는 등록되지 않습니다.</small><br>
+            <small>- 용량이 1KB보다 크며, 6MB 이하의 이미지</small><br>
+            <small>- 사이즈가 최소 36x36 pixels 보다 크며, 1920x1080 pixels 이하의 이미지</small>
+        </div>
+    </div>
+
+    <div id="list" class="container mb-5">
+        <h2>얼굴 데이터</h2>
+        <ul class="list-unstyled"></ul>
+    </div>
+
+    <div id="toast-wrapper" class="justify-content-center align-items-center">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body bind-body"></div>
+        </div>
+    </div>
+
+    <div id="templates" hidden>
+        <li id="list-item" class="media mb-2">
+            <div class="media-image">
+                <img src="./img/none.png" width="100%" class="mr-3" alt="Face image" onerror="javascript:this.src='./img/none.png'">
+            </div>
+            <div class="media-body overflow-hidden">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex">faceId : <input class="bind-faceId col ml-2 py-0 px-1 m-0" type="text" value="" readonly></li>
+                    <li class="list-group-item d-flex">URL : <input class="bind-imageUrl col ml-2 py-0 px-1 m-0" type="text" value="" readonly></li>
+                    <li class="list-group-item">성별 : <span class="bind-gender">gender</span></li>
+                    <li class="list-group-item">나이 : <span class="bind-age">age</span></li>
+                </ul>
+            </div>
+        </li>
+    </div>
+
+    <script src="./js/default.js"></script>
+</body>
+
+</html>
