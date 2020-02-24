@@ -41,12 +41,15 @@ function init() {
 
     endPointEl.addEventListener('change', function(e) {
         var baseUrl = e.target.value || ''
+        var nextBaseUrl = baseUrl
 
-        baseUrl = baseUrl.replace(/^https?:\/\//, '')
-        baseUrl = baseUrl.replace(/\/face$/, '')
-        baseUrl = baseUrl.replace(/\/$/, '')
-        localStorage.setItem('endPoint', baseUrl)
-        setBaseUrl(baseUrl)
+        nextBaseUrl = nextBaseUrl.replace(/^https?:\/\//, '')
+        nextBaseUrl = nextBaseUrl.replace(/\/face$/, '')
+        nextBaseUrl = nextBaseUrl.replace(/\/$/, '')
+
+        localStorage.setItem('endPoint', nextBaseUrl)
+        setBaseUrl(nextBaseUrl)
+        if (baseUrl !== nextBaseUrl) endPointEl.value = nextBaseUrl
     })
 
     keyEl.addEventListener('change', function(e) {
