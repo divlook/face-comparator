@@ -299,7 +299,12 @@ function cropperSave() {
             fillColor: '#fff',
             imageSmoothingQuality: 'high',
         }).toBlob(function(blob) {
-            addFace(blob)
+            file2DataUri(blob, function(dataUri) {
+                addFace({
+                    blob: blob,
+                    dataUri: dataUri,
+                })
+            })
         })
     }
 }
@@ -310,11 +315,11 @@ function cropperSave() {
 
 /**
  * 얼굴 등록하기
- * @param {Blob} blob
+ * @param {{ file: Blob, dataUri: string }} fileData
  */
-function addFace(blob) {
+function addFace(fileData) {
     var apiUrl = '/face/v1.0/detect'
-    var isUrl = !blob
+    var isUrl = !fileData
     var isFile = !isUrl
 
     var imageUrl = ''
@@ -342,8 +347,8 @@ function addFace(blob) {
     }
 
     if (isFile) {
-        imageUrl = temp.dataUri
-        body = blob
+        imageUrl = fileData.dataUri
+        body = fileData.blob
         headers['content-type'] = 'application/octet-stream'
         hideCropModal()
 
