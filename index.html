@@ -8,6 +8,9 @@
     <!-- Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+    <!-- Clipboard.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 
@@ -103,8 +106,32 @@
             </div>
             <div class="media-body overflow-hidden">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex">faceId : <input class="bind-faceId col ml-2 py-0 px-1 m-0" type="text" value="" readonly></li>
-                    <li class="list-group-item d-flex">URL : <input class="bind-imageUrl col ml-2 py-0 px-1 m-0" type="text" value="" readonly></li>
+                    <li class="list-group-item">
+                        <div class="input-group input-group-sm bind-faceId">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">faceId</span>
+                            </div>
+                            <input type="text" class="form-control" value="" readonly>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <img class="clippy" src="./img//clippy.svg" width="13" alt="Copy to clipboard">
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="input-group input-group-sm bind-imageUrl">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">URL</span>
+                            </div>
+                            <input type="text" class="form-control" value="" readonly>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <img class="clippy" src="./img//clippy.svg" width="13" alt="Copy to clipboard">
+                                </button>
+                            </div>
+                        </div>
+                    </li>
                     <li class="list-group-item">성별 : <span class="bind-gender">gender</span></li>
                     <li class="list-group-item">나이 : <span class="bind-age">age</span></li>
                 </ul>

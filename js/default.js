@@ -128,12 +128,18 @@ function createListItem(data) {
     var el = getTemplate('list-item')
     var frameEl = document.createElement('div')
     var img = el.querySelector('img')
+    var faceIdWrapperEl = el.querySelector('.bind-faceId')
+    var imageUrlWrapperEl = el.querySelector('.bind-imageUrl')
 
     img.src = data.imageUrl
-    el.querySelector('.bind-faceId').value = data.faceId
-    el.querySelector('.bind-imageUrl').value = data.imageUrl
     el.querySelector('.bind-gender').innerText = data.faceAttributes.gender
     el.querySelector('.bind-age').innerText = data.faceAttributes.age
+
+    faceIdWrapperEl.querySelector('input').value = data.faceId
+    setClipboard(faceIdWrapperEl.querySelector('button'), data.faceId, 'faceId가 복사되었습니다.')
+
+    imageUrlWrapperEl.querySelector('input').value = data.imageUrl
+    setClipboard(imageUrlWrapperEl.querySelector('button'), data.imageUrl, 'URL이 복사되었습니다.')
 
     listEl.appendChild(el)
 
@@ -287,4 +293,17 @@ function toast(body) {
     if (body) {
         $toast.toast('show')
     }
+}
+
+function setClipboard(selector, text, successMsg) {
+    return new ClipboardJS(selector, {
+        text: function() {
+            return text
+        },
+    }).on('success', function(e) {
+        toast( successMsg || '복사되었습니다.')
+        e.clearSelection()
+    }).on('error', function() {
+        toast('복사에 실패하였습니다.')
+    })
 }
