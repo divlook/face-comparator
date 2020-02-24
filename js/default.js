@@ -1,3 +1,5 @@
+'use strict'
+
 /* ****************************************
  * Variables
  */
@@ -5,8 +7,13 @@
 var store = {
     imageDatas: [],
 }
+var temp = {
+    dataUri: '',
+}
 var usingAxios = typeof axios !== 'undefined'
 var $toast = null
+var $cropModal = null
+var $cropper = null
 
 init()
 
@@ -74,6 +81,18 @@ function init() {
 
         localStorage.setItem('key', subscriptionKey)
         setSubscriptionKey(subscriptionKey)
+    })
+
+    document.getElementById('inputImageFile').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            var file = e.target.files[0]
+
+            file2DataUri(file, function(dataUri) {
+                showCropModal(dataUri)
+            })
+
+            e.target.value = ''
+        }
     })
 }
 
@@ -203,64 +222,180 @@ function createListItem(data) {
     })
 }
 
+/**
+ * Crop Modal 열기
+ * @param {string} dataUri
+ */
+function showCropModal(dataUri) {
+    var cropModalEl = document.getElementById('cropModal')
+    var imgEl = document.getElementById('cropTargetImage')
+
+    temp.dataUri = dataUri
+
+    if (!temp.dataUri) {
+        toast('파일이 없습니다.')
+        return
+    }
+
+    if (!$cropModal) {
+        $cropModal = $(cropModalEl).modal({
+            show: false,
+            backdrop: 'static',
+        })
+
+        $cropModal.on('shown.bs.modal', function() {
+            $cropper = new Cropper(imgEl, {
+                viewMode: 2,
+                dragMode: 'move',
+                minCanvasWidth: 36,
+                minCanvasHeight: 36,
+                minCropBoxWidth: 36,
+                minCropBoxHeight: 36,
+                toggleDragModeOnDblclick: false,
+                guides: false,
+            })
+        })
+
+        $cropModal.on('hidden.bs.modal', function() {
+            if ($cropper) {
+                $cropper.destroy()
+            }
+        })
+    }
+
+    imgEl.src = temp.dataUri
+    $cropModal.modal('show')
+}
+
+function hideCropModal() {
+    $cropModal.modal('hide')
+}
+
+function cropperZoomOut() {
+    if ($cropper) {
+        $cropper.zoom(-0.1)
+    }
+}
+
+function cropperZoomIn() {
+    if ($cropper) {
+        $cropper.zoom(0.1)
+    }
+}
+
+function cropperRotate() {
+    if ($cropper) {
+        $cropper.rotate(-90)
+    }
+}
+
+function cropperSave() {
+    if ($cropper) {
+        $cropper.getCroppedCanvas({
+            minWidth: 36,
+            minHeight: 36,
+            maxWidth: 1920,
+            maxHeight: 1080,
+            fillColor: '#fff',
+            imageSmoothingQuality: 'high',
+        }).toBlob(function(blob) {
+            addFace(blob)
+        })
+    }
+}
+
 /* ****************************************
  * Requests
  */
 
-function addFace() {
+/**
+ * 얼굴 등록하기
+ * @param {Blob} blob
+ */
+function addFace(blob) {
     var apiUrl = '/face/v1.0/detect'
+    var isUrl = !blob
+    var isFile = !isUrl
 
+    var imageUrl = ''
     var params = {
         returnFaceId: 'true',
         returnFaceLandmarks: 'false',
         returnFaceAttributes: 'age,gender',
     }
-
-    var imageUrl = document.getElementById('inputImage').value
+    var body = null
+    var headers = {}
 
     if (!localStorage.getItem('endPoint') || !localStorage.getItem('key')) {
         toast('End Point 또는 API Key가 입력되지 않았습니다.')
         return
     }
 
-    if (!imageUrl) {
-        toast('URL을 입력해주세요.')
-        return
+    if (isUrl) {
+        imageUrl = document.getElementById('inputImage').value
+        body = { url: imageUrl }
+
+        if (!imageUrl) {
+            toast('URL을 입력해주세요.')
+            return
+        }
+    }
+
+    if (isFile) {
+        imageUrl = temp.dataUri
+        body = blob
+        headers['content-type'] = 'application/octet-stream'
+        hideCropModal()
+
+        if (!imageUrl) {
+            toast('파일이 없습니다.')
+            return
+        }
     }
 
     axios({
         method: 'post',
         url: apiUrl,
         params: params,
-        data: { url: imageUrl },
-    }).then(response => {
-        var data = response.data
-        var total = data.length
-        var addedCnt = 0
+        data: body,
+        headers: headers,
+    })
+        .then(response => {
+            var data = response.data
+            var total = data.length
+            var addedCnt = 0
 
-        if (total === 0) {
-            toast('인식된 얼굴이 없습니다.')
-            return
-        }
-
-        for (var key = 0; key < total; key++) {
-            var val = data[key]
-            var convertedData = convertDataFormat(imageUrl, val)
-            var imageDataIndex = store.imageDatas.findIndex(function(imageData) {
-                return imageData.faceId === val.faceId
-            })
-            if (imageDataIndex === -1) {
-                addedCnt++
-                store.imageDatas.push(convertedData)
-                createListItem(convertedData)
+            if (total === 0) {
+                toast('인식된 얼굴이 없습니다.')
+                return
             }
-        }
 
-        toggleClass(document.getElementById('list'), 'hasData', store.imageDatas.length > 0)
-        toast('총 ' + addedCnt + '개의 얼굴이 추가되었습니다.')
+            for (var key = 0; key < total; key++) {
+                var val = data[key]
+                var convertedData = convertDataFormat(imageUrl, val)
+                var imageDataIndex = store.imageDatas.findIndex(function(imageData) {
+                    return imageData.faceId === val.faceId
+                })
+                if (imageDataIndex === -1) {
+                    addedCnt++
+                    store.imageDatas.push(convertedData)
+                    createListItem(convertedData)
+                }
+            }
 
-        saveStore()
-    }).catch(httpErrorHander)
+            toggleClass(document.getElementById('list'), 'hasData', store.imageDatas.length > 0)
+            toast('총 ' + addedCnt + '개의 얼굴이 추가되었습니다.')
+
+            saveStore()
+        })
+        .catch(httpErrorHander)
+        .then(function() {
+            clearTemp()
+        })
+}
+
+function clearTemp() {
+    temp.dataUri = ''
 }
 
 function diffFace() {
@@ -397,4 +532,12 @@ function toggleClass(target, className, condition) {
         el.classList.remove(className)
         return el
     }
+}
+
+function file2DataUri(file, callback) {
+    var reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.addEventListener('load', function() {
+        callback(reader.result)
+    })
 }
