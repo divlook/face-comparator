@@ -151,20 +151,8 @@ function createListItem(data) {
     var img = el.querySelector('img')
     var faceIdWrapperEl = el.querySelector('.bind-faceId')
     var imageUrlWrapperEl = el.querySelector('.bind-imageUrl')
-
-    img.src = data.imageUrl
-    el.querySelector('.bind-gender').innerText = data.faceAttributes.gender
-    el.querySelector('.bind-age').innerText = data.faceAttributes.age
-
-    faceIdWrapperEl.querySelector('input').value = data.faceId
-    setClipboard(faceIdWrapperEl.querySelector('button'), data.faceId, 'faceId가 복사되었습니다.')
-
-    imageUrlWrapperEl.querySelector('input').value = data.imageUrl
-    setClipboard(imageUrlWrapperEl.querySelector('button'), data.imageUrl, 'URL이 복사되었습니다.')
-
-    listEl.appendChild(el)
-
-    img.onload = function() {
+    var resizeTimeout = 0
+    var imgCb = function() {
         var imgRatio = img.clientWidth / img.naturalWidth
         var top = data.faceRectangle.top * imgRatio
         var height = data.faceRectangle.height * imgRatio
@@ -179,6 +167,26 @@ function createListItem(data) {
 
         el.querySelector('.media-image').appendChild(frameEl)
     }
+
+    img.src = data.imageUrl
+    el.querySelector('.bind-gender').innerText = data.faceAttributes.gender
+    el.querySelector('.bind-age').innerText = data.faceAttributes.age
+
+    faceIdWrapperEl.querySelector('input').value = data.faceId
+    setClipboard(faceIdWrapperEl.querySelector('button'), data.faceId, 'faceId가 복사되었습니다.')
+
+    imageUrlWrapperEl.querySelector('input').value = data.imageUrl
+    setClipboard(imageUrlWrapperEl.querySelector('button'), data.imageUrl, 'URL이 복사되었습니다.')
+
+    listEl.appendChild(el)
+
+    img.addEventListener('load', imgCb)
+    window.addEventListener('resize', function(e) {
+        if (img && window.getComputedStyle(img).visibility === 'visible') {
+            clearTimeout(resizeTimeout)
+            resizeTimeout = setTimeout(imgCb, 300)
+        }
+    })
 }
 
 function addFace() {
