@@ -206,10 +206,7 @@ function addFace() {
         toast('총 ' + addedCnt + '개의 얼굴이 추가되었습니다.')
 
         saveStore()
-    }).catch(error => {
-        console.error(error)
-        toast('에러가 발생하였습니다.')
-    })
+    }).catch(httpErrorHander)
 }
 
 function diffFace() {
@@ -243,10 +240,22 @@ function diffFace() {
 
         var similarity = Math.floor((data[0].confidence || 0) * 100)
         toast(similarity + '% 닮았습니다.')
-    }).catch(error => {
-        console.error(error)
-        toast('에러가 발생하였습니다.')
-    })
+    }).catch(httpErrorHander)
+}
+
+function httpErrorHander(error) {
+    if (error.response) {
+        var data = error.response.data
+        var errorMsg = data.error
+            ? data.error.code + ' : ' + data.error.message
+            : error.response.status
+
+        toast(errorMsg)
+    } else if (error.request) {
+        toast('서버에서 응답이 없습니다.')
+    } else {
+        toast('오류가 발생했습니다. ' + error.message)
+    }
 }
 
 function toast(body) {
