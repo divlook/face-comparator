@@ -21,9 +21,30 @@ function setSubscriptionKey(subscriptionKey) {
 function init() {
     var endPointEl = document.getElementById('end-point')
     var keyEl = document.getElementById('key')
+    var query = Qs.parse(location.search.replace(/^\?/, ''))
 
     if (usingAxios) {
         axios.defaults.headers.common['Content-Type'] = 'application/json'
+    }
+
+    if (document.getElementById('share')) {
+        setClipboard(document.getElementById('share'), function() {
+            var query = Qs.parse(location.search)
+
+            query.endPoint = endPointEl.value
+            query.key = keyEl.value
+
+            var nextQuery = Qs.stringify(query)
+            return location.origin + location.pathname + (nextQuery ? '?' + nextQuery : '')
+        })
+    }
+
+    if (query.endPoint) {
+        localStorage.setItem('endPoint', query.endPoint)
+    }
+
+    if (query.key) {
+        localStorage.setItem('key', query.key)
     }
 
     if (localStorage.getItem('endPoint')) {
@@ -298,7 +319,16 @@ function toast(body) {
 function setClipboard(selector, text, successMsg) {
     return new ClipboardJS(selector, {
         text: function() {
-            return text
+            switch (typeof text) {
+                case 'string':
+                    return text
+
+                case 'function':
+                    return text()
+
+                default:
+                    return ''
+            }
         },
     }).on('success', function(e) {
         toast( successMsg || '복사되었습니다.')
