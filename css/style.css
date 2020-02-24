@@ -16,6 +16,7 @@ h2 {
     opacity: 0;
     transition: opacity 0.5s;
     background-color: rgba(0, 0, 0, 0.2);
+    z-index: 9999;
 }
 #toast-wrapper.show {
     display: flex;
