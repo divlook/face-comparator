@@ -268,7 +268,7 @@ function toast(body) {
         $toast = $(toastEl).toast({
             animation: true,
             autohide: true,
-            delay: 2000,
+            delay: 3000,
         })
 
         $toast.on('show.bs.toast', function () {
@@ -277,6 +277,10 @@ function toast(body) {
 
         $toast.on('hidden.bs.toast', function () {
             toastWrapperEl.classList.remove('show')
+        })
+
+        toastWrapperEl.addEventListener('click', function() {
+            $toast.toast('hide')
         })
     }
 
