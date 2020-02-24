@@ -203,9 +203,7 @@ function addFace() {
             }
         }
 
-        setTimeout(function() {
-            toast('총 ' + addedCnt + '개의 얼굴이 추가되었습니다.')
-        }, 200)
+        toast('총 ' + addedCnt + '개의 얼굴이 추가되었습니다.')
 
         saveStore()
     }).catch(error => {
