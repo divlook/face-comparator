@@ -218,6 +218,11 @@ function addFace() {
 
     var imageUrl = document.getElementById('inputImage').value
 
+    if (!localStorage.getItem('endPoint') || !localStorage.getItem('key')) {
+        toast('End Point 또는 API Key가 입력되지 않았습니다.')
+        return
+    }
+
     if (!imageUrl) {
         toast('URL을 입력해주세요.')
         return
@@ -262,6 +267,11 @@ function diffFace() {
     var apiUrl = '/face/v1.0/findsimilars'
     var faceId1El = document.getElementById('faceId1')
     var faceId2El = document.getElementById('faceId2')
+
+    if (!localStorage.getItem('endPoint') || !localStorage.getItem('key')) {
+        toast('End Point 또는 API Key가 입력되지 않았습니다.')
+        return
+    }
 
     if (!faceId1El.value || !faceId2El.value) {
         toast('비교할 faceId 2개를 입력해주세요.')
