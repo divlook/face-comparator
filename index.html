@@ -114,37 +114,39 @@
             <div class="media-image">
                 <img src="./img/none.png" width="100%" class="mr-3" alt="Face image" onerror="javascript:this.src='./img/none.png'">
             </div>
-            <div class="media-body overflow-hidden">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <div class="input-group input-group-sm bind-faceId">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">faceId</span>
-                            </div>
-                            <input type="text" class="form-control" value="" readonly>
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button">
-                                    <img class="clippy" src="./img//clippy.svg" width="13" alt="Copy to clipboard">
-                                </button>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="input-group input-group-sm bind-imageUrl">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">URL</span>
-                            </div>
-                            <input type="text" class="form-control" value="" readonly>
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button">
-                                    <img class="clippy" src="./img//clippy.svg" width="13" alt="Copy to clipboard">
-                                </button>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">성별 : <span class="bind-gender">gender</span></li>
-                    <li class="list-group-item">나이 : <span class="bind-age">age</span></li>
-                </ul>
+            <div class="media-body overflow-hidden p-2">
+                <div class="input-group input-group-sm bind-faceId mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">faceId</span>
+                    </div>
+                    <input type="text" class="form-control" value="" readonly>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <img class="clippy" src="./img//clippy.svg" width="13" alt="Copy to clipboard">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="input-group input-group-sm bind-imageUrl mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">URL</span>
+                    </div>
+                    <input type="text" class="form-control" value="" readonly>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <img class="clippy" src="./img//clippy.svg" width="13" alt="Copy to clipboard">
+                        </button>
+                    </div>
+                </div>
+
+                <p class="mb-2">성별 : <span class="bind-gender">gender</span></p>
+                <p class="mb-2">나이 : <span class="bind-age">age</span></p>
+
+                <hr>
+
+                <div class="media-btns text-right">
+                    <button type="button" class="btn btn-danger btn-sm" data-action="delete">삭제</button>
+                </div>
             </div>
         </li>
     </div>

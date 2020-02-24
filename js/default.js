@@ -139,9 +139,7 @@ function resetList() {
         createListItem(store.imageDatas[key])
     }
 
-    if (total > 0) {
-        document.getElementById('list').classList.add('hasData')
-    }
+    toggleClass(document.getElementById('list'), 'hasData', store.imageDatas.length > 0)
 }
 
 function createListItem(data) {
@@ -149,6 +147,7 @@ function createListItem(data) {
     var el = getTemplate('list-item')
     var frameEl = document.createElement('div')
     var img = el.querySelector('img')
+    var btnsWrapperEl = el.querySelector('.media-btns')
     var faceIdWrapperEl = el.querySelector('.bind-faceId')
     var imageUrlWrapperEl = el.querySelector('.bind-imageUrl')
     var resizeTimeout = 0
@@ -187,6 +186,28 @@ function createListItem(data) {
             resizeTimeout = setTimeout(imgCb, 300)
         }
     })
+    btnsWrapperEl.addEventListener('click', function(e) {
+        if (e.type === 'click' && e.target.type === 'button' && e.target.dataset) {
+            switch (e.target.dataset.action) {
+                case 'delete':
+                    var imageDataIndex = store.imageDatas.findIndex(function(imageData) {
+                        return imageData.faceId === data.faceId
+                    })
+
+                    if (imageDataIndex !== -1) {
+                        listEl.removeChild(el)
+                        store.imageDatas.splice(imageDataIndex, 1)
+                        toast('삭제되었습니다.')
+                        saveStore()
+                        toggleClass(document.getElementById('list'), 'hasData', store.imageDatas.length > 0)
+                    }
+                    break
+
+                default:
+                    break
+            }
+        }
+    })
 }
 
 function addFace() {
@@ -214,16 +235,11 @@ function addFace() {
         var data = response.data
         var total = data.length
         var addedCnt = 0
-        var listEl = document.querySelector('#list ul')
 
         if (total === 0) {
-            observer.disconnect()
-            listEl.classList.remove('hasData')
             toast('인식된 얼굴이 없습니다.')
             return
         }
-
-        document.getElementById('list').classList.add('hasData')
 
         for (var key = 0; key < total; key++) {
             var val = data[key]
@@ -238,6 +254,7 @@ function addFace() {
             }
         }
 
+        toggleClass(document.getElementById('list'), 'hasData', store.imageDatas.length > 0)
         toast('총 ' + addedCnt + '개의 얼굴이 추가되었습니다.')
 
         saveStore()
@@ -344,4 +361,18 @@ function setClipboard(selector, text, successMsg) {
     }).on('error', function() {
         toast('복사에 실패하였습니다.')
     })
+}
+
+function toggleClass(target, className, condition) {
+    var el = typeof target === 'string'
+        ? document.querySelector(target)
+        : target
+
+    if (typeof condition === 'function' ? condition() : !!condition) {
+        el.classList.add(className)
+        return el
+    } else {
+        el.classList.remove(className)
+        return el
+    }
 }
