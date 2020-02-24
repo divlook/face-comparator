@@ -1,3 +1,7 @@
+/* ****************************************
+ * Variables
+ */
+
 var store = {
     imageDatas: [],
 }
@@ -6,17 +10,9 @@ var $toast = null
 
 init()
 
-function setBaseUrl(baseUrl) {
-    if (usingAxios) {
-        axios.defaults.baseURL = 'https://' + baseUrl
-    }
-}
-
-function setSubscriptionKey(subscriptionKey) {
-    if (usingAxios) {
-        axios.defaults.headers.common['Ocp-Apim-Subscription-Key'] = subscriptionKey
-    }
-}
+/* ****************************************
+ * Methods
+ */
 
 function init() {
     var endPointEl = document.getElementById('end-point')
@@ -81,6 +77,18 @@ function init() {
     })
 }
 
+function setBaseUrl(baseUrl) {
+    if (usingAxios) {
+        axios.defaults.baseURL = 'https://' + baseUrl
+    }
+}
+
+function setSubscriptionKey(subscriptionKey) {
+    if (usingAxios) {
+        axios.defaults.headers.common['Ocp-Apim-Subscription-Key'] = subscriptionKey
+    }
+}
+
 function saveStore() {
     localStorage.setItem('store', JSON.stringify(store))
 }
@@ -93,10 +101,6 @@ function loadStore() {
             // error
         }
     }
-}
-
-function getInputImageEl() {
-    return document.getElementById('inputImage')
 }
 
 function convertDataFormat(imageUrl, data) {
@@ -114,17 +118,6 @@ function convertDataFormat(imageUrl, data) {
             age: data.faceAttributes.age,
         },
     }
-}
-
-/**
- * 템플릿 가져오기
- * @param {'list-item'} templateId
- */
-function getTemplate(templateId) {
-    var templateEl = document.querySelector('#templates #' + templateId)
-    var cloneEl = templateEl.cloneNode(true)
-    cloneEl.removeAttribute('id')
-    return cloneEl
 }
 
 function resetList() {
@@ -210,6 +203,10 @@ function createListItem(data) {
     })
 }
 
+/* ****************************************
+ * Requests
+ */
+
 function addFace() {
     var apiUrl = '/face/v1.0/detect'
 
@@ -219,7 +216,7 @@ function addFace() {
         returnFaceAttributes: 'age,gender',
     }
 
-    var imageUrl = getInputImageEl().value
+    var imageUrl = document.getElementById('inputImage').value
 
     if (!imageUrl) {
         toast('URL을 입력해주세요.')
@@ -308,6 +305,21 @@ function httpErrorHander(error) {
     } else {
         toast('오류가 발생했습니다. ' + error.message)
     }
+}
+
+/* ****************************************
+ * Utils
+ */
+
+/**
+ * 템플릿 가져오기
+ * @param {'list-item'} templateId
+ */
+function getTemplate(templateId) {
+    var templateEl = document.querySelector('#templates #' + templateId)
+    var cloneEl = templateEl.cloneNode(true)
+    cloneEl.removeAttribute('id')
+    return cloneEl
 }
 
 function toast(body) {
