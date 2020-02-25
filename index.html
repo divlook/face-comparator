@@ -68,25 +68,6 @@
     </div>
 
     <div class="container mb-5">
-        <h2>얼굴 비교하기</h2>
-        <div class="row">
-            <div class="input-group mb-3 col-sm-6">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">얼굴 1</span>
-                </div>
-                <input type="text" class="form-control" name="faceId1" id="faceId1" placeholder="faceId를 입력해주세요." value="">
-            </div>
-            <div class="input-group mb-3 col-sm-6">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">얼굴 2</span>
-                </div>
-                <input type="text" class="form-control" name="faceId2" id="faceId2" placeholder="faceId를 입력해주세요." value="">
-            </div>
-            <div class="mb-3 col-sm-12 text-right"><button class="btn btn-primary" onclick="diffFace()">비교하기</button></div>
-        </div>
-    </div>
-
-    <div class="container mb-5">
         <h2>얼굴 등록하기</h2>
         <div class="input-group mb-3">
             <input type="file" class="d-none" name="inputImageFile" id="inputImageFile" accept="image/*">
@@ -109,6 +90,25 @@
     <div id="list" class="container mb-5">
         <h2>얼굴 데이터</h2>
         <ul class="list-unstyled"></ul>
+    </div>
+
+    <div class="container mb-5">
+        <h2>얼굴 비교하기</h2>
+        <div class="row">
+            <div class="input-group mb-3 col-sm-6">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">얼굴 1</span>
+                </div>
+                <input type="text" class="form-control" name="faceId1" id="faceId1" placeholder="faceId를 입력해주세요." value="">
+            </div>
+            <div class="input-group mb-3 col-sm-6">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">얼굴 2</span>
+                </div>
+                <input type="text" class="form-control" name="faceId2" id="faceId2" placeholder="faceId를 입력해주세요." value="">
+            </div>
+            <div class="mb-3 col-sm-12 text-right"><button class="btn btn-primary" onclick="diffFace()">비교하기</button></div>
+        </div>
     </div>
 
     <div id="toast-wrapper" class="justify-content-center align-items-center">
